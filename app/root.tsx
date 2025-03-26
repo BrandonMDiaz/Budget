@@ -9,6 +9,9 @@ import {
 
 import type { Route } from "./+types/root";
 import "./app.css";
+import "./i18n/confing";
+import { initDB } from "./utils/db";
+import { useEffect } from "react";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -32,7 +35,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className="p-10">
         {children}
         <ScrollRestoration />
         <Scripts />
@@ -42,6 +45,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+  const waitDb = async () => {
+    await initDB();
+  };
+  useEffect(() => {
+    waitDb();
+  });
   return <Outlet />;
 }
 
