@@ -7,6 +7,7 @@ import {
 } from "../services/gastosService";
 import dayjs from "dayjs";
 import { Recurrencia } from "../db/models/Gasto";
+import { getPaymentTypes } from "../services/paymentTypeService";
 
 interface UseGastos {
   gastos: Gasto[];
@@ -14,34 +15,105 @@ interface UseGastos {
   loadGastos: () => void;
 }
 
-export function useGastos(startDate: string, endDate: string) {
-  const [gastos, setGastos] = useState<Gasto[]>([]);
-  const [gastosPorPaymentType, setGastosPorPaymentType] = useState<Gasto[]>([]);
-  const [gastosPorSentimiento, setGastosPorSentimiento] = useState<Gasto[]>([]);
-  const [gastosPorCategoria, setGastosPorCategoria] = useState<Gasto[]>([]);
-  const [gastosPorRecurrentes, setGastosPorRecurrentes] = useState<Gasto[]>([]);
-
+export function useGastos(startDate: dayjs.Dayjs, endDate: dayjs.Dayjs) {
+  const [gastosPorPaymentType, setGastosPorPaymentType] = useState<Gasto[][]>(
+    []
+  );
   const [loading, setLoading] = useState<boolean>(false);
-
-  const loadGastos = async () => {
-    const gastos = await getGastos(dayjs(startDate), dayjs(endDate));
-    const gastosPaymentType = await getGastosByIndex(
-      dayjs(startDate),
-      dayjs(endDate),
-      "paymentTypeId"
-    );
-    setGastos(gastos as Gasto[]);
-    setGastosPorPaymentType(gastosPaymentType as Gasto[]);
-    /* setGastosPorSentimiento(gastos as Gasto[]);
-    setGastosPorCategoria(gastos as Gasto[]);
-    setGastosPorRecurrentes(gastos as Gasto[]); */
-
-    setLoading(false);
-  };
+  const [pagosTarjetas, setPagosTarjetas] = useState<
+    Record<string, { porPagar: number; pagado: number }>
+  >({});
+  const weAreOnCurrentMonth = dayjs().isBefore(endDate);
 
   useEffect(() => {
-    loadGastos();
+    loadGastosByPaymentType;
+    calcularPagoDeTarjetaEnMesActual();
   }, []);
+
+  const loadGastosByPaymentType = async () => {
+    const paymentTypes = (await getPaymentTypes()) as PaymentType[];
+    const gastosByPaymentType: Gasto[][] = [];
+    paymentTypes.forEach(async (type) => {
+      const gastosPaymentType = (await getGastosByIndex(
+        startDate,
+        endDate,
+        "paymentTypeId",
+        type.id
+      )) as Gasto[];
+      gastosByPaymentType.push(gastosPaymentType);
+    });
+    setGastosPorPaymentType(gastosByPaymentType);
+  };
+
+  const calcularPagoDeTarjetaEnMesActual = async () => {
+    const paymentTypes = (await getPaymentTypes()) as PaymentType[];
+    const gastoByPaymentType: Record<
+      string,
+      { porPagar: number; pagado: number }
+    > = {};
+    paymentTypes.forEach(async (paymentType) => {
+      if (paymentType.id > 1) {
+        debugger;
+
+        const porPagar = await getDineroPorPagar(paymentType);
+        let pagado = await getDineroPagadoDelMes(paymentType);
+        gastoByPaymentType[paymentType.nombre] = { porPagar, pagado };
+      }
+    });
+    setPagosTarjetas(gastoByPaymentType);
+  };
+
+  function getFechaDeCortePasadaMasReciente(payment: PaymentType) {
+    const today = dayjs();
+    const fechaDeCorteDelMesActual = startDate.set(
+      "date",
+      Number(payment.diaDeCorte)
+    );
+
+    if (
+      weAreOnCurrentMonth &&
+      (fechaDeCorteDelMesActual.isBefore(today) ||
+        fechaDeCorteDelMesActual.isSame(today))
+    ) {
+      return fechaDeCorteDelMesActual;
+    }
+    return getFechaDeCorteDelMesPasado(payment);
+  }
+  function getFechaDeCorteDelMesPasado(payment: PaymentType) {
+    return startDate
+      .set("date", Number(payment.diaDeCorte))
+      .subtract(1, "month");
+  }
+  function getFechaDeCorteDelMesActual(payment: PaymentType) {
+    return startDate.set("date", Number(payment.diaDeCorte));
+  }
+  async function getDineroPagadoDelMes(payment: PaymentType) {
+    const fechaDeCorteMesPasado = getFechaDeCorteDelMesPasado(payment);
+    const fechaDeCorteMesActual = getFechaDeCorteDelMesActual(payment);
+
+    const gastosDesdeFechaDeCorteHastaFinDeMes = (await getGastosByIndex(
+      fechaDeCorteMesPasado,
+      fechaDeCorteMesActual,
+      "paymentTypeId",
+      payment.id
+    )) as Gasto[];
+
+    return gastosDesdeFechaDeCorteHastaFinDeMes.reduce((accum, curr) => {
+      return accum + curr.precio;
+    }, 0);
+  }
+  async function getDineroPorPagar(paymentType: PaymentType) {
+    const fechaDeCorte = getFechaDeCortePasadaMasReciente(paymentType);
+    const gastosDesdeFechaDeCorteHastaFinDeMes = (await getGastosByIndex(
+      fechaDeCorte,
+      endDate,
+      "paymentTypeId",
+      paymentType.id
+    )) as Gasto[];
+    return gastosDesdeFechaDeCorteHastaFinDeMes.reduce((accum, curr) => {
+      return curr.precio + accum;
+    }, 0);
+  }
 
   function modifyGastos(gastos: Gasto[]) {
     gastos.forEach(async (gasto) => {
@@ -66,5 +138,24 @@ export function useGastos(startDate: string, endDate: string) {
       await updateGastos(newGasto);
     });
   }
-  return { gastos, loading, loadGastos };
+
+  function modifyMonth(gastos: Gasto[]) {
+    gastos.forEach(async (gasto) => {
+      const newGasto = { ...gasto };
+      if (
+        newGasto.recurrencia &&
+        newGasto.recurrencia === Recurrencia.Unico &&
+        dayjs(newGasto.fecha).month() === 1
+      ) {
+        newGasto.fecha = dayjs(newGasto.fecha).add(1, "month").toString();
+        await updateGastos(newGasto);
+      }
+    });
+  }
+  return {
+    loading,
+    pagosTarjetas,
+    gastosPorPaymentType,
+    loadGastosByPaymentType,
+  };
 }

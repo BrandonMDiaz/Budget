@@ -6,67 +6,57 @@ import { usePaymentTypes } from "~/utils/hooks/usePaymentType";
 import { useState } from "react";
 import dayjs from "dayjs";
 import { Gasto } from "~/components/gastos/Gasto";
+import { PaymentInfo } from "~/components/payment/PaymentInfo";
 
-export function GastosScreen() {
+export default function GastosScreen() {
   const [month, setMonth] = useState<dayjs.Dayjs>(dayjs());
   const {
-    gastos,
+    gastosPorPaymentType,
+    pagosTarjetas,
     loading: loadingGastos,
-    loadGastos,
-  } = useGastos(
-    month.startOf("month").format("YYYY-MM-DD").toString(),
-    month.endOf("month").format("YYYY-MM-DD").toString()
-  );
+    loadGastosByPaymentType,
+  } = useGastos(month.startOf("month"), month.endOf("month"));
   const {
     paymentTypes,
     loading: loadingPaymentTypes,
     loadPaymentTypes,
   } = usePaymentTypes();
-  const getCurrentMonth = () => {
-    const month = [
-      "Enero",
-      "Febrero",
-      "Marzo",
-      "Abril",
-      "Mayo",
-      "Junio",
-      "Julio",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ];
-
-    const d = new Date();
-    return month[d.getMonth()];
-  };
 
   const getTotal = () => {
-    return gastos.reduce((acc, gasto) => {
-      return acc + Number(gasto.precio);
-    }, 0);
+    let gastoTotal = 0;
+    gastosPorPaymentType.forEach((el) => {
+      const res = el.reduce((acc, gasto) => {
+        return acc + Number(gasto.precio);
+      }, 0);
+      gastoTotal += res;
+    });
+    return gastoTotal;
   };
   return (
     <div>
       <div>
         <PaymentTypeForm loadPayment={loadPaymentTypes}></PaymentTypeForm>
+        <PaymentInfo></PaymentInfo>
       </div>
-      <GastoForm loadGastos={loadGastos}></GastoForm>
+      <GastoForm loadGastos={loadGastosByPaymentType}></GastoForm>
       <div className="flex flex-col gap-5 border-black rounded border-2 p-2">
         <div className="flex justify-between items-end px-10">
           <h1 className="font-bold">Gastos </h1>
 
           <div className="flex gap-2">
             <Button>Anterior</Button>
-            <h1 className="text-2xl">Mes de {getCurrentMonth()}</h1>
+            <h1 className="text-2xl">
+              Mes de {dayjs().locale("es-mx").format("MMMM")}
+            </h1>
             <Button>Siguiente</Button>
           </div>
 
           <h3>Total: {getTotal()}</h3>
         </div>
         <div className="flex justify-between">
-          <Gasto gastos={gastos} />
+          <div>
+            {/* <Gasto gastos={gastos} paymentTypes={paymentTypes} /> */}
+          </div>
           <div className="p-2">
             <div>
               <h1>Tipos de pago:</h1>

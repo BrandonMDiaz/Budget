@@ -1,3 +1,4 @@
+import { resolve } from 'path';
 import { categoriasDefault } from './models/Categorias';
 import { sentimientoDefault } from './models/Sentimiento';
 
@@ -81,9 +82,21 @@ export function openDB(fn: (db: IDBDatabase) => void, err: (error: Event) => voi
     };
     openRequest.onerror = (error: Event) => {
         err(error);
+
     }
 }
 
+export async function openDB2() {
+    return new Promise<IDBDatabase>((resolve, reject) => {
+        const openRequest = indexedDB.open(DB_NAME, DB_VERSION);
+        openRequest.onsuccess = () => {
+            const db = openRequest.result;
+            resolve(db);
+        };
+        openRequest.onerror = (error: Event) => {
+            reject(error)
+        }
+    })
 
-
+}
 
