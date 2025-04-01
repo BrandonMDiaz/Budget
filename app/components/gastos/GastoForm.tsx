@@ -126,10 +126,10 @@ export function GastoForm({ loadGastos }: Props) {
         <Form.Item<FieldType>
           label="Categoria:"
           name="categoriaId"
-          initialValue={10}
+          initialValue={1}
         >
           <Select
-            defaultValue={10}
+            defaultValue={1}
             style={{ width: 200 }}
             options={categoriasSelect}
           />

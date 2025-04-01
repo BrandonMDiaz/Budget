@@ -4,6 +4,7 @@ import {
   Input,
   InputNumber,
   Popconfirm,
+  Select,
   Table,
   Typography,
 } from "antd";
@@ -16,6 +17,7 @@ import { useEffect, useMemo, useState } from "react";
 import { updateGastos } from "~/utils/services/gastosService";
 import { Recurrencia } from "~/utils/db/models/Gasto";
 import { categoriasDefault } from "~/utils/db/models/Categorias";
+import { useCategorias } from "~/utils/hooks/useCategorias";
 dayjs.locale("es-mx");
 interface Props {
   gastos: Record<string, Gasto[]>;
@@ -26,12 +28,20 @@ interface EditableCellProps extends React.HTMLAttributes<HTMLElement> {
   editing: boolean;
   dataIndex: string;
   title: any;
-  inputType: "number" | "text" | "date";
+  inputType:
+    | "number"
+    | "text"
+    | "date"
+    | "categoriaId"
+    | "sentimientoId"
+    | "paymentTypeId";
   record: Gasto;
   index: number;
+  categoriasSelect: any;
 }
 
 export function GastoList({ gastos, paymentTypes }: Props) {
+  const { categoriasSelect } = useCategorias();
   const dataFormatted = useMemo(() => {
     return Object.keys(gastos).reduce<Record<string, any[]>>((acc, key) => {
       acc[key] = gastos[key].map((el) => ({
@@ -139,7 +149,7 @@ export function GastoList({ gastos, paymentTypes }: Props) {
         <>{sentimientoDefault[sentimiento - 1]?.nombre}</>
       ),
       editable: true,
-      dataType: "number",
+      dataType: "sentimientoId",
     },
     {
       title: "Tipo de pago",
@@ -163,7 +173,7 @@ export function GastoList({ gastos, paymentTypes }: Props) {
         }
         return "";
       },
-      dataType: "number",
+      dataType: "categoriaId",
     },
     {
       title: "operation",
@@ -206,6 +216,7 @@ export function GastoList({ gastos, paymentTypes }: Props) {
         dataIndex: col.dataIndex,
         title: col.title,
         editing: isEditing(record),
+        categoriasSelect,
       }),
     };
   });
@@ -256,7 +267,7 @@ const updateData = async (gasto: Gasto) => {
     newData.paymentTypeId === undefined ? 1 : newData.paymentTypeId;
   newData.sentimientoId =
     newData.sentimientoId === undefined ? 4 : newData.sentimientoId;
-  if (newData.finRecurrencia) {
+  if (newData.finRecurrencia && typeof newData.finRecurrencia !== "string") {
     newData.finRecurrencia = (newData.finRecurrencia as any).$d.toString();
   }
   if (newData.recurrencia === Recurrencia.MSI && newData.numMeses) {
@@ -276,12 +287,40 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
   index,
   children,
   defaultValue,
+  categoriasSelect,
   ...restProps
 }) => {
   let inputNode = inputType === "number" ? <InputNumber /> : <Input />;
   if (inputType === "date") {
     inputNode = (
       <DatePicker name={dataIndex} style={{ margin: 0 }} format="YYYY-MM-DD" />
+    );
+  }
+  if (inputType === "categoriaId") {
+    inputNode = (
+      <Select
+        defaultValue={1}
+        style={{ width: 200 }}
+        options={categoriasSelect}
+      />
+    );
+  }
+  if (inputType === "paymentTypeId") {
+    inputNode = (
+      <Select
+        defaultValue={1}
+        style={{ width: 200 }}
+        options={categoriasSelect}
+      />
+    );
+  }
+  if (inputType === "sentimientoId") {
+    inputNode = (
+      <Select
+        defaultValue={1}
+        style={{ width: 200 }}
+        options={categoriasSelect}
+      />
     );
   }
 

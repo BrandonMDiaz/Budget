@@ -3,7 +3,7 @@ import { categoriasDefault } from './models/Categorias';
 import { sentimientoDefault } from './models/Sentimiento';
 
 export const DB_NAME = "ControlGastos";
-export const DB_VERSION = 36;
+export const DB_VERSION = 38;
 
 export enum Stores {
     Gastos = 'gastos',
@@ -11,7 +11,7 @@ export enum Stores {
     Sentimiento = 'sentimientos',
     CategoriasGasto = 'categoriasGasto',
     Ingresos = 'ingresos',
-    Notas = 'notas'
+    Notes = 'notes'
 }
 
 // init db
@@ -47,6 +47,16 @@ export function initDB() {
             }
             if (!db.objectStoreNames.contains(Stores.CategoriasGasto)) {
                 db.createObjectStore(Stores.CategoriasGasto, { keyPath: "id", autoIncrement: true });
+            }
+            if (!db.objectStoreNames.contains(Stores.Ingresos)) {
+                const ingresoStore = db.createObjectStore(Stores.Ingresos, { keyPath: "id", autoIncrement: true });
+                ingresoStore.createIndex("fechaInicio", "fechaInicio", { unique: false });
+                ingresoStore.createIndex("fechaFin", "fechaFin", { unique: false });
+            }
+            if (!db.objectStoreNames.contains(Stores.Notes)) {
+                const noteStore = db.createObjectStore(Stores.Notes, { keyPath: "id", autoIncrement: true });
+                noteStore.createIndex("fecha", "fecha", { unique: false });
+
             }
         };
 

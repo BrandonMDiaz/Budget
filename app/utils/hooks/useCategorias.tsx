@@ -20,6 +20,7 @@ export function useCategorias(): UsePaymentType {
   const loadCategorias = async () => {
     setLoading(true);
     const categorias = (await getCategorias()) as CategoriasGasto[];
+    console.log(categorias);
     setCategorias(categorias);
     setCategoriasSelect(mapToSelect(categorias));
     setLoading(false);

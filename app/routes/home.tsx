@@ -3,8 +3,8 @@ import { GastosScreen } from "../screens";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "New React Router App" },
-    { name: "description", content: "Welcome to React Router!" },
+    { title: "Gastos" },
+    { name: "Gastos", content: "No tires mas el dinero" },
   ];
 }
 

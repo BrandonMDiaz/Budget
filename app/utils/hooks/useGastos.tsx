@@ -7,12 +7,15 @@ import {
 } from "../services/gastosService";
 import dayjs from "dayjs";
 import { getPaymentTypes } from "../services/paymentTypeService";
-import { Frecuencia, Recurrencia } from "../db/models/Gasto";
+import { Recurrencia } from "../db/models/Gasto";
+import { getCategorias } from "../services/categoriasService";
+import type { CategoriasGasto } from "../db/models/Categorias";
 
+type GastoBy = Record<string, Gasto[]>;
 export function useGastos(startDate: dayjs.Dayjs, endDate: dayjs.Dayjs) {
-  const [gastosPorPaymentType, setGastosPorPaymentType] = useState<
-    Record<string, Gasto[]>
-  >({});
+  const [gastosPorPaymentType, setGastosPorPaymentType] = useState<GastoBy>({});
+  const [gastosByCategory, setGastosByCategory] = useState<GastoBy>({});
+
   const [loadingPagosTarjetas, setLoadingPagosTarjetas] =
     useState<boolean>(false);
   const [loadingTarjetasMesActual, setLoadingTarjetasMesActual] =
@@ -33,13 +36,31 @@ export function useGastos(startDate: dayjs.Dayjs, endDate: dayjs.Dayjs) {
     loadGastosByPaymentType();
     calcularPagoDeTarjetaEnMesActual();
     getGastosPorRecurrencia();
+    getGastoPorCategoria();
   }, []);
+
+  async function getGastoPorCategoria() {
+    const categorias = (await getCategorias()) as CategoriasGasto[];
+    const gastoByCategoria: GastoBy = {};
+    await Promise.all(
+      categorias.map(async (category) => {
+        const categoryGasto = (await getGastosByIndex(
+          startDate,
+          endDate,
+          "categoriaId",
+          category.id
+        )) as Gasto[];
+        gastoByCategoria[category.id] = categoryGasto;
+      })
+    );
+    setGastosByCategory(gastoByCategoria);
+  }
 
   async function loadGastosByPaymentType() {
     setLoadingPagosTarjetas(true);
     const paymentTypes = (await getPaymentTypes()) as PaymentType[];
 
-    const gastosByPaymentType: Record<string, Gasto[]> = {};
+    const gastosByPaymentType: GastoBy = {};
     await Promise.all(
       paymentTypes.map(async (type) => {
         const gastosPaymentType = (await getGastosByIndex(
@@ -180,6 +201,7 @@ export function useGastos(startDate: dayjs.Dayjs, endDate: dayjs.Dayjs) {
     gastosPorPaymentType,
     loadingTarjetasMesActual,
     gastosPorRecurrencia,
+    gastosByCategory,
     loadGastosByPaymentType,
     calcularPagoDeTarjetaEnMesActual,
   };

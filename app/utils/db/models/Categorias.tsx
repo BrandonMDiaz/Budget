@@ -1,12 +1,13 @@
 export interface CategoriasGasto {
   id: number;
   nombre: string;
+  porcentaje: number;
 }
 
 export const categoriasDefault = [
-  { id: 1, nombre: "Basico" },
-  { id: 2, nombre: "Lujo" },
-  { id: 3, nombre: "Ahorro" },
+  { id: 1, nombre: "Basico", porcentaje: 50 },
+  { id: 2, nombre: "Lujo", porcentaje: 30 },
+  { id: 3, nombre: "Ahorro", porcentaje: 20 },
   { id: 4, nombre: "Comida" },
   { id: 5, nombre: "Social" },
   { id: 6, nombre: "Medico" },

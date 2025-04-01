@@ -7,14 +7,12 @@ import { useState } from "react";
 import dayjs from "dayjs";
 import { GastoList } from "~/components/gastos/Gasto";
 import { PaymentInfo } from "~/components/payment/PaymentInfo";
-import { GastoRecurrente } from "~/components/gastos/GastoRecurrente";
 import { GastoRecurrenteList } from "~/components/gastos/GastoRecurrenteList";
 
 export default function GastosScreen() {
   const [month, setMonth] = useState<dayjs.Dayjs>(dayjs());
   const [showAddType, setShowType] = useState<Boolean>(false);
   const [showAddGasto, setShowAddGasto] = useState<Boolean>(false);
-
   const {
     gastosPorPaymentType,
     loadingPagosTarjetas,
@@ -26,6 +24,9 @@ export default function GastosScreen() {
     loadPaymentTypes,
   } = usePaymentTypes();
 
+  function minusMonth() {
+    setMonth(dayjs().subtract(1, "month"));
+  }
   const getTotal = () => {
     let gastoTotal = 0;
     Object.keys(gastosPorPaymentType).forEach((key) => {
@@ -58,9 +59,15 @@ export default function GastosScreen() {
           <h1 className="font-bold">Gastos </h1>
 
           <div className="flex gap-2">
-            <Button>Anterior</Button>
+            <Button
+              onClick={() => {
+                minusMonth();
+              }}
+            >
+              Anterior
+            </Button>
             <h1 className="text-2xl">
-              Mes de {dayjs().locale("es-mx").format("MMMM")}
+              Mes de {month.locale("es-mx").format("MMMM")}
             </h1>
             <Button>Siguiente</Button>
           </div>

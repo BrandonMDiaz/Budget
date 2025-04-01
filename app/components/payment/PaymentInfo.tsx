@@ -9,10 +9,17 @@ export function PaymentInfo() {
     month.startOf("month"),
     month.endOf("month")
   );
-
+  function totalPorPagar() {
+    let total = 0;
+    Object.keys(pagosTarjetas).forEach((key) => {
+      total += Number(pagosTarjetas[key].porPagar);
+    });
+    return total;
+  }
   const keys = Object.keys(pagosTarjetas);
   return (
     <div>
+      <h1 className="text-3xl">{totalPorPagar()}</h1>
       <span>Tarjetas:</span>
       <span>
         {keys.map((key) => {

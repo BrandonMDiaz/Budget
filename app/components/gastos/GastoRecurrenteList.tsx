@@ -11,6 +11,7 @@ export function GastoRecurrenteList() {
     month.startOf("month"),
     month.endOf("month")
   );
+
   function getTotal(key: "msi" | "recurrente" | "unico") {
     return gastosPorRecurrencia[key].reduce(
       (acc, gasto) => acc + Number(gasto.precio),
