@@ -1,43 +1,22 @@
-import { Stores, openDB } from '~/utils/db';
+import { DB_NAME, DB_VERSION, Stores } from '~/utils/db';
 import type { Sentimiento } from '../db/models';
+import { openDB } from 'idb';
 
-export function addSentimiento(sentimiento: Sentimiento): Promise<unknown> {
-    return new Promise((resolve, reject) => {
-        openDB((db) => {
-            const transaction = db.transaction(Stores.Sentimiento, "readwrite");
-            const store = transaction.objectStore(Stores.Sentimiento);
-            const request = store.add(sentimiento);
-            request.onsuccess = () => {
-                console.log(request.result)
-                resolve(request.result);
-            }
-            request.onerror = () => {
-                reject(request.error)
-            }
-        }, (error) => {
-            console.log("Error: ", error)
-            reject(error.type);
-        })
-    });
+export async function addSentimiento(sentimiento: Sentimiento): Promise<unknown> {
+    const db = await openDB(DB_NAME, DB_VERSION);
+    const transaction = db.transaction(Stores.Sentimiento, "readwrite");
+    const store = transaction.objectStore(Stores.Sentimiento);
+    const request = await store.add(sentimiento);
+    return request
+
 }
 
-export function getSentimientos() {
-    return new Promise((resolve, reject) => {
-        openDB((db) => {
-            const transaction = db.transaction(Stores.Sentimiento, "readwrite");
-            const store = transaction.objectStore(Stores.Sentimiento);
-            const request = store.getAll();
-            request.onsuccess = () => {
-                resolve(request.result);
-            }
-            request.onerror = () => {
-                reject(request.error)
-            }
-        }, (error) => {
-            console.log("Error: ", error)
-            reject(error.type);
-        })
-    });
+export async function getSentimientos() {
+    const db = await openDB(DB_NAME, DB_VERSION);
+    const transaction = db.transaction(Stores.Sentimiento, "readwrite");
+    const store = transaction.objectStore(Stores.Sentimiento);
+    const request = await store.getAll();
+    return request;
 }
 
 export function updateSentimientos() {

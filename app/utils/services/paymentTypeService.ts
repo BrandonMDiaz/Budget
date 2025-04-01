@@ -1,41 +1,24 @@
-import { Stores, openDB } from '~/utils/db';
+import { openDB } from 'idb';
+import { DB_NAME, DB_VERSION, Stores } from '~/utils/db';
 
-export function addPaymentType(paymentType: PaymentType): Promise<unknown> {
-    return new Promise((resolve, reject) => {
-        openDB((db) => {
-            const transaction = db.transaction(Stores.PaymentType, "readwrite");
-            const store = transaction.objectStore(Stores.PaymentType);
-            const request = store.add(paymentType);
-            request.onsuccess = () => {
-                resolve(request.result);
-            }
-            request.onerror = () => {
-                reject(request.error)
-            }
-        }, (error) => {
-            console.log("Error: ", error)
-            reject(error.type);
-        })
-    });
+export async function addPaymentType(paymentType: PaymentType): Promise<unknown> {
+    const db = await openDB(DB_NAME, DB_VERSION);
+    const transaction = db.transaction(Stores.PaymentType, "readwrite");
+    const store = transaction.objectStore(Stores.PaymentType);
+    const request = store.add(paymentType);
+    transaction.done
+    return request;
+
 }
 
-export function getPaymentTypes() {
-    return new Promise((resolve, reject) => {
-        openDB((db) => {
-            const transaction = db.transaction(Stores.PaymentType, "readwrite");
-            const store = transaction.objectStore(Stores.PaymentType);
-            const request = store.getAll();
-            request.onsuccess = () => {
-                resolve(request.result);
-            }
-            request.onerror = () => {
-                reject(request.error)
-            }
-        }, (error) => {
-            console.log("Error: ", error)
-            reject(error.type);
-        })
-    });
+export async function getPaymentTypes() {
+    const db = await openDB(DB_NAME, DB_VERSION);
+    const transaction = db.transaction(Stores.PaymentType, "readwrite");
+    const store = transaction.objectStore(Stores.PaymentType);
+    const request = await store.getAll();
+    transaction.done
+
+    return request;
 }
 
 

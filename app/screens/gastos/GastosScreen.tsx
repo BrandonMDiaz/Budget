@@ -5,15 +5,19 @@ import { Button } from "antd";
 import { usePaymentTypes } from "~/utils/hooks/usePaymentType";
 import { useState } from "react";
 import dayjs from "dayjs";
-import { Gasto } from "~/components/gastos/Gasto";
+import { GastoList } from "~/components/gastos/Gasto";
 import { PaymentInfo } from "~/components/payment/PaymentInfo";
+import { GastoRecurrente } from "~/components/gastos/GastoRecurrente";
+import { GastoRecurrenteList } from "~/components/gastos/GastoRecurrenteList";
 
 export default function GastosScreen() {
   const [month, setMonth] = useState<dayjs.Dayjs>(dayjs());
+  const [showAddType, setShowType] = useState<Boolean>(false);
+  const [showAddGasto, setShowAddGasto] = useState<Boolean>(false);
+
   const {
     gastosPorPaymentType,
-    pagosTarjetas,
-    loading: loadingGastos,
+    loadingPagosTarjetas,
     loadGastosByPaymentType,
   } = useGastos(month.startOf("month"), month.endOf("month"));
   const {
@@ -24,8 +28,8 @@ export default function GastosScreen() {
 
   const getTotal = () => {
     let gastoTotal = 0;
-    gastosPorPaymentType.forEach((el) => {
-      const res = el.reduce((acc, gasto) => {
+    Object.keys(gastosPorPaymentType).forEach((key) => {
+      const res = gastosPorPaymentType[key].reduce((acc, gasto) => {
         return acc + Number(gasto.precio);
       }, 0);
       gastoTotal += res;
@@ -35,10 +39,20 @@ export default function GastosScreen() {
   return (
     <div>
       <div>
-        <PaymentTypeForm loadPayment={loadPaymentTypes}></PaymentTypeForm>
-        <PaymentInfo></PaymentInfo>
+        <Button onClick={() => setShowType(!showAddType)}>Add Type</Button>
+        {showAddType && (
+          <PaymentTypeForm loadPayment={loadPaymentTypes}></PaymentTypeForm>
+        )}
       </div>
-      <GastoForm loadGastos={loadGastosByPaymentType}></GastoForm>
+      <div>
+        <Button onClick={() => setShowAddGasto(!showAddGasto)}>
+          Add Gasto
+        </Button>
+        {showAddGasto && (
+          <GastoForm loadGastos={loadGastosByPaymentType}></GastoForm>
+        )}
+      </div>
+
       <div className="flex flex-col gap-5 border-black rounded border-2 p-2">
         <div className="flex justify-between items-end px-10">
           <h1 className="font-bold">Gastos </h1>
@@ -55,16 +69,22 @@ export default function GastosScreen() {
         </div>
         <div className="flex justify-between">
           <div>
-            {/* <Gasto gastos={gastos} paymentTypes={paymentTypes} /> */}
+            <GastoList
+              gastos={gastosPorPaymentType}
+              paymentTypes={paymentTypes}
+            />
           </div>
-          <div className="p-2">
-            <div>
+          <div className="flex p-2 justify-between">
+            {/* <div className="">
               <h1>Tipos de pago:</h1>
               {paymentTypes.map((payment) => {
                 return <p key={payment.id}>{payment.nombre}</p>;
               })}
+            </div> */}
+            <div className="px-3">
+              <GastoRecurrenteList></GastoRecurrenteList>
+              <PaymentInfo></PaymentInfo>
             </div>
-            <div></div>
           </div>
         </div>
       </div>

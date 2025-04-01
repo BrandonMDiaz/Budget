@@ -14,7 +14,7 @@ export function PaymentTypeForm({ loadPayment }: Props) {
       <h1 className="font-bold">Agregar tipo de pago:</h1>
 
       <Form
-        name="basic"
+        name="paymentType"
         onFinish={submitPaymentType}
         className="flex gap-2 flex-wrap"
       >
@@ -33,7 +33,7 @@ export function PaymentTypeForm({ loadPayment }: Props) {
           name="diasParaPagar"
           initialValue={20}
         >
-          <Input type="number" />
+          <Input type="number" defaultValue={20} />
         </Form.Item>
         <Form.Item label={null}>
           <Button type="primary" htmlType="submit">

@@ -58,6 +58,7 @@ export function GastoForm({ loadGastos }: Props) {
     gastoReal.sentimientoId =
       gastoReal.sentimientoId === undefined ? 4 : gastoReal.sentimientoId;
     gastoReal.fecha = (gastoReal.fecha as any).$d.toString();
+    gastoReal.precio = Number(gastoReal.precio);
     if (gastoReal.finRecurrencia) {
       gastoReal.finRecurrencia = (
         gastoReal.finRecurrencia as any
@@ -68,7 +69,6 @@ export function GastoForm({ loadGastos }: Props) {
         .add(gastoReal.numMeses, "month")
         .toString();
     }
-    console.log(gastoReal);
     await addGasto(gastoReal);
     loadGastos();
   };
@@ -129,7 +129,7 @@ export function GastoForm({ loadGastos }: Props) {
           initialValue={10}
         >
           <Select
-            defaultValue={4}
+            defaultValue={10}
             style={{ width: 200 }}
             options={categoriasSelect}
           />

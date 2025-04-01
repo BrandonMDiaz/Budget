@@ -1,18 +1,20 @@
-import { resolve } from 'path';
+import { openDB } from 'idb';
 import { categoriasDefault } from './models/Categorias';
 import { sentimientoDefault } from './models/Sentimiento';
 
-const DB_NAME = "ControlGastos";
-const DB_VERSION = 36;
+export const DB_NAME = "ControlGastos";
+export const DB_VERSION = 36;
 
 export enum Stores {
     Gastos = 'gastos',
     PaymentType = 'paymentTypes',
     Sentimiento = 'sentimientos',
-    CategoriasGasto = 'categoriasGasto'
+    CategoriasGasto = 'categoriasGasto',
+    Ingresos = 'ingresos',
+    Notas = 'notas'
 }
 
-// Abrir la base de datos
+// init db
 export function initDB() {
     return new Promise((resolve, reject) => {
         const request = window.indexedDB.open(DB_NAME, DB_VERSION);
@@ -73,30 +75,6 @@ export function initDB() {
 }
 
 
-export function openDB(fn: (db: IDBDatabase) => void, err: (error: Event) => void) {
-    const openRequest = indexedDB.open(DB_NAME, DB_VERSION);
-    openRequest.onsuccess = () => {
-        const db = openRequest.result;
-        fn(db);
-        db.close()
-    };
-    openRequest.onerror = (error: Event) => {
-        err(error);
-
-    }
+export async function getDB() {
+    return openDB(DB_NAME, DB_VERSION);
 }
-
-export async function openDB2() {
-    return new Promise<IDBDatabase>((resolve, reject) => {
-        const openRequest = indexedDB.open(DB_NAME, DB_VERSION);
-        openRequest.onsuccess = () => {
-            const db = openRequest.result;
-            resolve(db);
-        };
-        openRequest.onerror = (error: Event) => {
-            reject(error)
-        }
-    })
-
-}
-
