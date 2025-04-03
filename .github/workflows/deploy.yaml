@@ -19,17 +19,21 @@ jobs:
           cd scripts
           bun install
 
-      - run: bun scripts/transform.ts
+      - name: Upload generated JSON file
+        uses: actions/upload-artifact@v4
+        with:
+          name: extracted-data
+          path: scripts/extractedData.json 
 
   store-on-s3:
     runs-on: ubuntu-latest
     needs: html-to-json  # Ensures it runs after `html-to-json`
     steps:
       - name: Download generated file
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: extracted-data
 
       - name: Print JSON contents
         shell: bash
-        run: cat extractedData.json
+        run: cat scripts/extractedData.json
