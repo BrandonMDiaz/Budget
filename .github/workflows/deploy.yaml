@@ -3,7 +3,7 @@ name: deploy
 on:
   workflow_dispatch:
 
-run-name: test
+run-name: Upload and trasnform test
 
 jobs:
   html-to-json:
@@ -23,7 +23,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: extracted-data
-          path: scripts/extractedData.json 
+          path: extractedData.json 
 
   store-on-s3:
     runs-on: ubuntu-latest
@@ -36,4 +36,6 @@ jobs:
 
       - name: Print JSON contents
         shell: bash
-        run: cat scripts/extractedData.json
+        run: |
+          value=`cat math-homework.txt`
+          echo The result is $value
