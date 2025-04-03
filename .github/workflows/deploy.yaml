@@ -41,5 +41,5 @@ jobs:
       - name: Print JSON contents
         shell: bash
         run: |
-          value=`cat extractedData.txt`
+          value=`cat extractedData.json`
           echo The result is $value
