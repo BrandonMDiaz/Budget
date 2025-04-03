@@ -18,6 +18,10 @@ jobs:
       - run: |
           cd scripts
           bun install
+     
+      - run: |
+          cd scripts
+          bun run transform.ts
 
       - name: Upload generated JSON file
         uses: actions/upload-artifact@v4
