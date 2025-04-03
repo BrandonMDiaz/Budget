@@ -29,11 +29,16 @@ export function useGastos(stDate: string, enDate: string) {
   const [gastosPorPaymentType, setGastosPorPaymentType] = useState<GastoBy>({});
   const [gastosByCategoryPresupuesto, setGastosByCategoryPresupuesto] =
     useState<GastoBy>({});
+  const [gastosByCategory, setGastosByCategory] = useState<GastoBy>({});
   const [total, setTotal] = useState<number>(0);
   const [loadingPagosTarjetas, setLoadingPagosTarjetas] =
     useState<boolean>(false);
   const [loadingTarjetasMesActual, setLoadingTarjetasMesActual] =
     useState<boolean>(false);
+  const [
+    loadingGastosByCategoryPresupuesto,
+    setLoadingGastosByCategoryPresupuesto,
+  ] = useState<boolean>(false);
   const [pagosTarjetas, setPagosTarjetas] = useState<Tarjetas>({});
 
   const [gastosPorRecurrencia, setGastosPorRecurrencia] = useState<{
@@ -49,13 +54,31 @@ export function useGastos(stDate: string, enDate: string) {
     calcularPagoDeTarjetaEnMesActual();
     getGastosPorRecurrencia();
     getGastoPorCategoriaPresupuesto();
+    getGastoPorCategoria();
   }, [stDate, enDate]);
 
   useEffect(() => {
     getTotal();
   }, [gastosPorPaymentType, pagosTarjetas]);
 
+  async function getGastoPorCategoria() {
+    const categoriasPrespuesto = (await getCategorias()) as CategoriasGasto[];
+    const gastoByCategoria: GastoBy = {};
+    await Promise.all(
+      categoriasPrespuesto.map(async (category) => {
+        const categoryGasto = (await getGastosByIndex(
+          startDate,
+          endDate,
+          "categoriaId",
+          category.id
+        )) as Gasto[];
+        gastoByCategoria[category.nombre] = categoryGasto;
+      })
+    );
+    setGastosByCategory(gastoByCategoria);
+  }
   async function getGastoPorCategoriaPresupuesto() {
+    setLoadingGastosByCategoryPresupuesto(true);
     const categoriasPrespuesto =
       (await getCategoriasPresupuesto()) as CategoriasPresupuesto[];
     const gastoByCategoria: GastoBy = {};
@@ -67,9 +90,11 @@ export function useGastos(stDate: string, enDate: string) {
           "categoriaPresupuestoId",
           category.id
         )) as Gasto[];
-        gastoByCategoria[category.id] = categoryGasto;
+
+        gastoByCategoria[category.nombre] = categoryGasto;
       })
     );
+    setLoadingGastosByCategoryPresupuesto(false);
     setGastosByCategoryPresupuesto(gastoByCategoria);
   }
 
@@ -234,6 +259,8 @@ export function useGastos(stDate: string, enDate: string) {
     loadingTarjetasMesActual,
     gastosPorRecurrencia,
     gastosByCategoryPresupuesto,
+    gastosByCategory,
+    loadingGastosByCategoryPresupuesto,
     loadGastosByPaymentType,
     calcularPagoDeTarjetaEnMesActual,
     total,

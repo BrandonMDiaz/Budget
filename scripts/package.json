@@ -1,0 +1,13 @@
+{
+  "name": "html-to-json",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@types/cheerio": "^0.22.35",
+    "cheerio": "^1.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5",
+    "@types/bun": "latest"
+  }
+}

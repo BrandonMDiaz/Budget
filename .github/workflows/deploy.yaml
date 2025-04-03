@@ -1,0 +1,22 @@
+name: deploy
+"on":
+  workflow_dispatch:
+
+run-name: test
+
+jobs:
+  html-to-json:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install
+
+      - name: Run script to generate new file
+      - run: bun scripts/transform.ts
+  store-on-s3:
+    runs-on: ubuntu-latest 
+    steps:
+      - name: test
+      shell: bash
+      run: cat extractedData.json

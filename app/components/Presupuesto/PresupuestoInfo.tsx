@@ -12,8 +12,12 @@ import { useCategoriasPresupuesto } from "~/utils/hooks/useCategoriaPresupusto";
 export function PresupuestoInfo() {
   const { month, setMonth } = useMonth();
   const { ingresoTotal } = useIngreso();
-  const { categoriasPresupuesto } = useCategoriasPresupuesto();
-  const { gastosByCategoryPresupuesto, pagosTarjetas } = useGastos(
+  const { categoriasPresupuesto, loading } = useCategoriasPresupuesto();
+  const {
+    gastosByCategoryPresupuesto,
+    pagosTarjetas,
+    loadingGastosByCategoryPresupuesto,
+  } = useGastos(
     month.startOf("month").toString(),
     month.endOf("month").toString()
   );
@@ -47,26 +51,27 @@ export function PresupuestoInfo() {
   ];
   return (
     <div>
-      {Object.keys(gastosByCategoryPresupuesto).map((key) => {
-        return (
-          <div key={key}>
-            <h1>
-              {categoriasPresupuesto[Number(key) - 1].nombre} - %
-              {categoriasPresupuesto[Number(key) - 1].porcentaje}
-            </h1>
-            <h2>
-              {calculatePercentaje(
-                gastosByCategoryPresupuesto[key],
-                categoriasPresupuesto[Number(key) - 1].porcentaje
-              )}
-            </h2>
-            <Table
-              columns={columns}
-              dataSource={gastosByCategoryPresupuesto[key]}
-            ></Table>
-          </div>
-        );
-      })}
+      {!loading &&
+        !loadingGastosByCategoryPresupuesto &&
+        categoriasPresupuesto.map((categoria) => {
+          return (
+            <div key={categoria.nombre}>
+              <h1>
+                {categoria.nombre} - %{categoria.porcentaje}
+              </h1>
+              <h2>
+                {calculatePercentaje(
+                  gastosByCategoryPresupuesto[categoria.nombre],
+                  categoria.porcentaje
+                )}
+              </h2>
+              <Table
+                columns={columns}
+                dataSource={gastosByCategoryPresupuesto[categoria.nombre]}
+              ></Table>
+            </div>
+          );
+        })}
     </div>
   );
 }
