@@ -12,6 +12,7 @@ export interface Gasto {
   sentimientoId: number;
   paymentTypeId: number;
   categoriaId: number;
+  categoriaPresupuestoId: number;
 }
 
 export enum Recurrencia {

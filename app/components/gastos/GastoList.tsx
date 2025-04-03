@@ -18,6 +18,10 @@ import { updateGastos } from "~/utils/services/gastosService";
 import { Recurrencia } from "~/utils/db/models/Gasto";
 import { categoriasDefault } from "~/utils/db/models/Categorias";
 import { useCategorias } from "~/utils/hooks/useCategorias";
+import { categoriasPresupuestoDefault } from "~/utils/db/models/CategoriaPresupuesto";
+import { useCategoriasPresupuesto } from "~/utils/hooks/useCategoriaPresupusto";
+import { useSentimientos } from "~/utils/hooks/useSentimientos";
+import { usePaymentTypes } from "~/utils/hooks/usePaymentType";
 dayjs.locale("es-mx");
 interface Props {
   gastos: Record<string, Gasto[]>;
@@ -34,14 +38,22 @@ interface EditableCellProps extends React.HTMLAttributes<HTMLElement> {
     | "date"
     | "categoriaId"
     | "sentimientoId"
-    | "paymentTypeId";
+    | "paymentTypeId"
+    | "categoriaPresupuestoId"
+    | "recurrencia";
   record: Gasto;
   index: number;
   categoriasSelect: any;
+  categoriasPresupuestoSelect: any;
+  sentimientosSelect: any;
+  paymentTypesSelect: any;
 }
 
 export function GastoList({ gastos, paymentTypes }: Props) {
   const { categoriasSelect } = useCategorias();
+  const { categoriasPresupuestoSelect } = useCategoriasPresupuesto();
+  const { sentimientosSelect } = useSentimientos();
+  const { paymentTypesSelect } = usePaymentTypes();
   const dataFormatted = useMemo(() => {
     return Object.keys(gastos).reduce<Record<string, any[]>>((acc, key) => {
       acc[key] = gastos[key].map((el) => ({
@@ -160,7 +172,7 @@ export function GastoList({ gastos, paymentTypes }: Props) {
         return paymentTypes.find((payment) => payment.id === paymentTypeId)
           ?.nombre;
       },
-      dataType: "number",
+      dataType: "paymentTypeId",
     },
     {
       title: "Categoria",
@@ -176,7 +188,27 @@ export function GastoList({ gastos, paymentTypes }: Props) {
       dataType: "categoriaId",
     },
     {
-      title: "operation",
+      title: "Categoria Presupuesto",
+      dataIndex: "categoriaPresupuestoId",
+      key: "categoriaPresupuestoId",
+      editable: true,
+      render: (categoriaId: number) => {
+        if (categoriaId && categoriasPresupuestoDefault[categoriaId - 1]) {
+          return categoriasPresupuestoDefault[categoriaId - 1].nombre;
+        }
+        return "";
+      },
+      dataType: "categoriaPresupuestoId",
+    },
+    {
+      title: "Recurrencia",
+      dataIndex: "recurrencia",
+      key: "recurrencia",
+      editable: true,
+      dataType: "recurrencia",
+    },
+    {
+      title: "Operacion",
       dataIndex: "operation",
       render: (_: any, record: Gasto) => {
         const editable = isEditing(record);
@@ -217,21 +249,31 @@ export function GastoList({ gastos, paymentTypes }: Props) {
         title: col.title,
         editing: isEditing(record),
         categoriasSelect,
+        categoriasPresupuestoSelect,
+        paymentTypesSelect,
+        sentimientosSelect,
       }),
     };
   });
 
   return (
-    <div className="gap-2 flex-col">
+    <div className=" flex-col">
       <Form form={form} component={false}>
         {Object.keys(data).map((key) => {
           return (
             <div key={key}>
-              <h1>{key}</h1>
-              <span>
+              <h1 className="text-2xl font-bold">{key}</h1>
+              <h1 className="text-lg">
                 Total:
-                {data[key].reduce((acc, curr) => acc + Number(curr.precio), 0)}
-              </span>
+                <span className="font-bold ">
+                  $
+                  {data[key].reduce(
+                    (acc, curr) => acc + Number(curr.precio),
+                    0
+                  )}
+                </span>
+              </h1>
+
               <Table<Gasto>
                 components={{
                   body: { cell: EditableCell },
@@ -288,6 +330,9 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
   children,
   defaultValue,
   categoriasSelect,
+  categoriasPresupuestoSelect,
+  paymentTypesSelect,
+  sentimientosSelect,
   ...restProps
 }) => {
   let inputNode = inputType === "number" ? <InputNumber /> : <Input />;
@@ -297,33 +342,34 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
     );
   }
   if (inputType === "categoriaId") {
-    inputNode = (
-      <Select
-        defaultValue={1}
-        style={{ width: 200 }}
-        options={categoriasSelect}
-      />
-    );
+    inputNode = <Select style={{ width: 200 }} options={categoriasSelect} />;
   }
   if (inputType === "paymentTypeId") {
-    inputNode = (
-      <Select
-        defaultValue={1}
-        style={{ width: 200 }}
-        options={categoriasSelect}
-      />
-    );
+    inputNode = <Select style={{ width: 200 }} options={paymentTypesSelect} />;
   }
   if (inputType === "sentimientoId") {
+    inputNode = <Select style={{ width: 200 }} options={sentimientosSelect} />;
+  }
+
+  if (inputType === "categoriaPresupuestoId") {
+    inputNode = (
+      <Select style={{ width: 200 }} options={categoriasPresupuestoSelect} />
+    );
+  }
+  if (inputType === "recurrencia") {
     inputNode = (
       <Select
-        defaultValue={1}
+        defaultValue={"unico"}
         style={{ width: 200 }}
-        options={categoriasSelect}
+        onChange={(el) => {}}
+        options={[
+          { label: "Unico", value: "unico" },
+          { label: "Meses sin intereses", value: "msi" },
+          { label: "Recurrente", value: "recurrente" },
+        ]}
       />
     );
   }
-
   return (
     <td {...restProps}>
       {editing ? (

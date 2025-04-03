@@ -1,8 +1,7 @@
 import type { Gasto } from '~/utils/db/models';
 import dayjs from "dayjs";
 import { Recurrencia } from '../db/models/Gasto';
-import { openDB } from 'idb';
-import { DB_NAME, DB_VERSION, Stores, getDB } from '../db';
+import { Stores, getDB } from '../db';
 
 export async function addGasto(gasto: Gasto): Promise<unknown> {
     const db = await getDB();

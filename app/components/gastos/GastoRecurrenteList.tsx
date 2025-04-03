@@ -1,17 +1,17 @@
 import { useState } from "react";
-import { useGastos } from "~/utils/hooks/useGastos";
 import dayjs from "dayjs";
 import type { Gasto } from "~/utils/db/models";
 import { sentimientoDefault } from "~/utils/db/models/Sentimiento";
 import { Table } from "antd";
-export function GastoRecurrenteList() {
-  const [month, setMonth] = useState<dayjs.Dayjs>(dayjs());
 
-  const { gastosPorRecurrencia } = useGastos(
-    month.startOf("month"),
-    month.endOf("month")
-  );
-
+interface Props {
+  gastosPorRecurrencia: {
+    msi: Gasto[];
+    recurrente: Gasto[];
+    unico: Gasto[];
+  };
+}
+export function GastoRecurrenteList({ gastosPorRecurrencia }: Props) {
   function getTotal(key: "msi" | "recurrente" | "unico") {
     return gastosPorRecurrencia[key].reduce(
       (acc, gasto) => acc + Number(gasto.precio),
@@ -71,17 +71,24 @@ export function GastoRecurrenteList() {
   ];
   return (
     <div>
-      <h1>Recurrente</h1>
-      <h1>Total: {getTotal("recurrente")} </h1>
+      <h1 className="text-xl font-bold">Gasto recurrente</h1>
+      <h1 className="text-lg">
+        Total:<span className="font-bold"> ${getTotal("recurrente")}</span>
+      </h1>
       <Table
         dataSource={gastosPorRecurrencia.recurrente}
         columns={columns}
       ></Table>
-      <h1>Meses sin intereses</h1>
-      <h1>Total: {getTotal("msi")} </h1>
+      <h1 className="text-xl font-bold">Gasto meses sin intereses</h1>
+      <h1>
+        <span className="font-bold">Total:</span> ${getTotal("msi")}{" "}
+      </h1>
       <Table dataSource={gastosPorRecurrencia.msi} columns={columns}></Table>
-      <h1>Unico</h1>
-      <h1>Total: {getTotal("unico")} </h1>
+      <h1 className="text-xl font-bold">Gasto único</h1>
+
+      <h1>
+        <span className="font-bold">Total:</span> ${getTotal("unico")}{" "}
+      </h1>
       <Table dataSource={gastosPorRecurrencia.unico} columns={columns}></Table>
     </div>
   );

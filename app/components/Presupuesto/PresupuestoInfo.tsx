@@ -6,18 +6,23 @@ import { useCategorias } from "~/utils/hooks/useCategorias";
 import type { Gasto } from "~/utils/db/models";
 import { useIngreso } from "~/utils/hooks/useIngreso";
 import { IngresosList } from "../ingresos/Ingresos";
+import { useMonth } from "~/utils/context/MonthContext";
+import { useCategoriasPresupuesto } from "~/utils/hooks/useCategoriaPresupusto";
 
 export function PresupuestoInfo() {
-  const [month, setMonth] = useState<dayjs.Dayjs>(dayjs());
+  const { month, setMonth } = useMonth();
   const { ingresoTotal } = useIngreso();
-  const { categorias } = useCategorias();
-  const { gastosByCategory } = useGastos(
-    month.startOf("month"),
-    month.endOf("month")
+  const { categoriasPresupuesto } = useCategoriasPresupuesto();
+  const { gastosByCategoryPresupuesto, pagosTarjetas } = useGastos(
+    month.startOf("month").toString(),
+    month.endOf("month").toString()
   );
 
   function calculatePercentaje(gastos: Gasto[], porcentaje: number) {
-    const limite = ingresoTotal * (porcentaje / 100);
+    const porPagar = Object.keys(pagosTarjetas).reduce((acc, curr) => {
+      return Number(pagosTarjetas[curr].porPagar) + acc;
+    }, 0);
+    const limite = (ingresoTotal - porPagar) * (porcentaje / 100);
     const totalGastos = gastos.reduce(
       (acc, current) => acc + current.precio,
       0
@@ -42,23 +47,23 @@ export function PresupuestoInfo() {
   ];
   return (
     <div>
-      <div className="w-60">
-        <IngresosList></IngresosList>
-      </div>
-      {Object.keys(gastosByCategory).map((key) => {
+      {Object.keys(gastosByCategoryPresupuesto).map((key) => {
         return (
           <div key={key}>
             <h1>
-              {categorias[Number(key) - 1].nombre} - %
-              {categorias[Number(key) - 1].porcentaje}
+              {categoriasPresupuesto[Number(key) - 1].nombre} - %
+              {categoriasPresupuesto[Number(key) - 1].porcentaje}
             </h1>
             <h2>
               {calculatePercentaje(
-                gastosByCategory[key],
-                categorias[Number(key) - 1].porcentaje
+                gastosByCategoryPresupuesto[key],
+                categoriasPresupuesto[Number(key) - 1].porcentaje
               )}
             </h2>
-            <Table columns={columns} dataSource={gastosByCategory[key]}></Table>
+            <Table
+              columns={columns}
+              dataSource={gastosByCategoryPresupuesto[key]}
+            ></Table>
           </div>
         );
       })}

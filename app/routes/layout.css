@@ -1,0 +1,20 @@
+a.active {
+    color: blue;
+    font-weight: 800;
+  }
+
+
+  
+  a.pending {
+    animate: pulse 1s infinite;
+  }
+  
+  a.transitioning {
+    /* css transition is running */
+  }
+  .ant-card-body {
+    padding: 1rem !important;
+  }
+  .ant-card-body {
+    font-size: 1rem !important;
+  }

@@ -1,6 +1,5 @@
 import { DB_NAME, DB_VERSION, Stores, getDB } from '~/utils/db';
 import type { CategoriasGasto } from '../db/models/Categorias';
-import { openDB } from 'idb';
 
 export async function addCategoria(cateogria: CategoriasGasto): Promise<unknown> {
     const db = await getDB();

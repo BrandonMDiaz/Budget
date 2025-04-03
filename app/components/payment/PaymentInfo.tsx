@@ -1,14 +1,10 @@
 import { useEffect, useState } from "react";
-import { useGastos } from "~/utils/hooks/useGastos";
 import dayjs from "dayjs";
-
-export function PaymentInfo() {
-  const [month, setMonth] = useState<dayjs.Dayjs>(dayjs());
-
-  const { pagosTarjetas, calcularPagoDeTarjetaEnMesActual } = useGastos(
-    month.startOf("month"),
-    month.endOf("month")
-  );
+import type { Tarjetas } from "~/utils/hooks/useGastos";
+interface Props {
+  pagosTarjetas: Tarjetas;
+}
+export function PaymentInfo({ pagosTarjetas }: Props) {
   function totalPorPagar() {
     let total = 0;
     Object.keys(pagosTarjetas).forEach((key) => {
@@ -19,22 +15,29 @@ export function PaymentInfo() {
   const keys = Object.keys(pagosTarjetas);
   return (
     <div>
-      <h1 className="text-3xl">{totalPorPagar()}</h1>
-      <span>Tarjetas:</span>
-      <span>
-        {keys.map((key) => {
-          const data = pagosTarjetas[key];
-          return (
-            <div key={key}>
-              <h4>{key}:</h4>
-              <ul>
-                <li>pagado:{data.pagado}</li>
-                <li>por pagar:{data.porPagar}</li>
-              </ul>
-            </div>
-          );
-        })}
-      </span>
+      {keys.map((key) => {
+        const data = pagosTarjetas[key];
+        return (
+          <div key={key}>
+            <h4 className="font-bold">{key}</h4>
+            <ul className="ps-4">
+              <li>
+                por pagar: $<span className="font-bold">{data.porPagar}</span>
+              </li>
+              <li>
+                dia de corte:
+                <span className="font-bold">{data.fechaCorte}</span>
+              </li>
+            </ul>
+          </div>
+        );
+      })}
+      <div>
+        <h4 className="font-bold">
+          Por pagar total - $
+          <span className="font-bold">{totalPorPagar()}</span>
+        </h4>
+      </div>
     </div>
   );
 }

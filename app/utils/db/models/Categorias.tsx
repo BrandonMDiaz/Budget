@@ -5,9 +5,9 @@ export interface CategoriasGasto {
 }
 
 export const categoriasDefault = [
-  { id: 1, nombre: "Basico", porcentaje: 50 },
-  { id: 2, nombre: "Lujo", porcentaje: 30 },
-  { id: 3, nombre: "Ahorro", porcentaje: 20 },
+  { id: 1, nombre: "Carro" },
+  { id: 2, nombre: "Casa" },
+  { id: 3, nombre: "Transporte" },
   { id: 4, nombre: "Comida" },
   { id: 5, nombre: "Social" },
   { id: 6, nombre: "Medico" },
@@ -17,7 +17,7 @@ export const categoriasDefault = [
   { id: 10, nombre: "Cuidado personal" },
   { id: 11, nombre: "Otros" },
   { id: 12, nombre: "Subscripciones" },
-  { id: 13, nombre: "Casa" },
-  { id: 14, nombre: "Transporte" },
-  { id: 15, nombre: "Carro" },
+  { id: 13, nombre: "Ropa" },
+  { id: 14, nombre: "Ahorro" },
+  { id: 15, nombre: "Salida" },
 ];

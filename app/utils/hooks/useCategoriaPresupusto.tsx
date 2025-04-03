@@ -2,16 +2,20 @@ import { useEffect, useState } from "react";
 import { getPaymentTypes } from "../services/paymentTypeService";
 import type { CategoriasGasto } from "../db/models/Categorias";
 import { getCategorias } from "../services/categoriasService";
+import { type CategoriasPresupuesto } from "../db/models/CategoriaPresupuesto";
+import { getCategoriasPresupuesto } from "../services/categoriaPresupuesto";
 
-interface UsePaymentType {
-  categorias: CategoriasGasto[];
+interface UseCategoriasPresupuesto {
+  categoriasPresupuesto: CategoriasPresupuesto[];
   loading: boolean;
-  categoriasSelect: { label: string; value: number }[];
+  categoriasPresupuestoSelect: { label: string; value: number }[];
   loadCategorias: () => void;
 }
-export function useCategorias(): UsePaymentType {
-  const [categorias, setCategorias] = useState<CategoriasGasto[]>([]);
-  const [categoriasSelect, setCategoriasSelect] = useState<
+export function useCategoriasPresupuesto(): UseCategoriasPresupuesto {
+  const [categoriasPresupuesto, setCategorias] = useState<
+    CategoriasPresupuesto[]
+  >([]);
+  const [categoriasPresupuestoSelect, setCategoriasSelect] = useState<
     { label: string; value: number }[]
   >([]);
 
@@ -19,7 +23,8 @@ export function useCategorias(): UsePaymentType {
 
   const loadCategorias = async () => {
     setLoading(true);
-    const categorias = (await getCategorias()) as CategoriasGasto[];
+    const categorias =
+      (await getCategoriasPresupuesto()) as CategoriasPresupuesto[];
     setCategorias(categorias);
     setCategoriasSelect(mapToSelect(categorias));
     setLoading(false);
@@ -36,5 +41,10 @@ export function useCategorias(): UsePaymentType {
     }));
   };
 
-  return { categorias, loading, categoriasSelect, loadCategorias };
+  return {
+    categoriasPresupuesto,
+    loading,
+    categoriasPresupuestoSelect,
+    loadCategorias,
+  };
 }

@@ -10,8 +10,9 @@ import {
 import type { Route } from "./+types/root";
 import "./app.css";
 import "./i18n/confing";
-import { initDB } from "./utils/db";
-import { useEffect } from "react";
+import { MonthProvider } from "./utils/context/MonthContext";
+import dayjs from "dayjs";
+dayjs.locale("es-mx");
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -35,7 +36,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body className="p-10">
+      <body className="bg-gray-600">
         {children}
         <ScrollRestoration />
         <Scripts />
@@ -45,13 +46,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  const waitDb = async () => {
-    await initDB();
-  };
-  useEffect(() => {
-    waitDb();
-  });
-  return <Outlet />;
+  return (
+    <MonthProvider>
+      <Outlet />;
+    </MonthProvider>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
