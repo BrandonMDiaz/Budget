@@ -13,9 +13,7 @@ jobs:
       - name: List current path
         shell: bash
         run: ls -al ../
-      - name: List path files
-        shell: bash
-        run: ls -al ${{inputs.file_path}}
+      
       - name: List current path
         shell: bash
         run: ls -al ../../
