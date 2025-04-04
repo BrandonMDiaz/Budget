@@ -45,4 +45,4 @@ jobs:
     needs: download-file
     uses: BrandonMDiaz/Budget/.github/workflows/helper.yaml@master  # Llama al workflow externo
     with:
-      file-path: ./downloads/extractedData.json  # Ruta donde se descargó el archivo
+      file_path: ./downloads/extractedData.json  # Ruta donde se descargó el archivo
