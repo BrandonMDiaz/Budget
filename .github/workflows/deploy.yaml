@@ -45,8 +45,11 @@ jobs:
         run: |
           value=`cat ./downloads/extractedData.json`
           echo The result is $value
+      - name: List downloaded files
+        shell: bash
+        run: ls -al ./downloads
   call-helper-workflow:
     needs: download-file
     uses: BrandonMDiaz/Budget/.github/workflows/helper.yaml@master  # Llama al workflow externo
     with:
-      file_path: ./downloads/extractedData.json  # Ruta donde se descargó el archivo
+      file_path: $GITHUB_WORKSPACE/downloads/extractedData.json/downloads/extractedData.json  # Ruta donde se descargó el archivo
