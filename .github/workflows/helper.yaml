@@ -13,5 +13,5 @@ jobs:
       - name: Uses file
         shell: bash
         run: |
-          value=`cat ${{inputs.file_path}}extractedData.json`
+          value=`cat ${{inputs.file_path}}`
           echo The result is $value
