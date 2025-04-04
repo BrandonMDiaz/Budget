@@ -3,13 +3,13 @@ name: deploy
 on:
   workflow_dispatch:
   
-run-name: Upload and trasnform test
+run-name: Upload and transform test
 
 jobs:
   html-to-json:
     runs-on: ubuntu-latest
     outputs:
-      file-path: extractedData.json
+      file-path: scripts/extractedData.json  # Define la ruta completa de salida
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -30,16 +30,19 @@ jobs:
         with:
           name: extracted-data
           path: scripts/extractedData.json 
+
   download-file:
     runs-on: ubuntu-latest
-    needs: html-to-json  # Ensures it runs after `html-to-json`
+    needs: html-to-json  # Asegura que se ejecute después de `html-to-json`
     steps:
       - name: Download generated file
         uses: actions/download-artifact@v4
         with:
-          name: extracted-data 
-    uses: BrandonMDiaz/Budget/.github/workflows/helper.yaml@master
-    with:
-      file_path: ""
-    
+          name: extracted-data
+          path: ./downloads  # Descarga el archivo en la carpeta local `downloads`
 
+  call-helper-workflow:
+    needs: download-file
+    uses: BrandonMDiaz/Budget/.github/workflows/helper.yaml@master  # Llama al workflow externo
+    with:
+      file-path: ./downloads/extractedData.json  # Ruta donde se descargó el archivo
