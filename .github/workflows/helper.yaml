@@ -11,7 +11,8 @@ on:
         description: test
         type: string
 jobs:
-  download-file:
+  find-file-please:
+    needs: download-file
     runs-on: ubuntu-latest
     steps:
       - name: Download generated file
@@ -19,24 +20,7 @@ jobs:
         if:  ${{ inputs.artifactory-name != '' }}
         with:
           name: ${{ inputs.artifactory-name }}
-          path: ./downloads  # Descarga el archivo en la carpeta local `downloads`
-  check-file:
-    needs: download-file
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check files
-        shell: bash
-        run: |
-          ls -al ./ 
-      - name: Check files
-        shell: bash
-        run: |
-          value=`cat ./downloads/extractedData.json`
-          echo The result is $value
-  find-file-please:
-    needs: download-file
-    runs-on: ubuntu-latest
-    steps:
+          path: ./downloads
       - name: Uses file
         shell: bash
         run: |
