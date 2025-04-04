@@ -33,5 +33,5 @@ jobs:
     needs: html-to-json
     uses: BrandonMDiaz/Budget/.github/workflows/helper.yaml@master
     with:
-      file_path: ${{steps.html-to-json.outputs.artifact-path}}
+      file_path: ""
 
