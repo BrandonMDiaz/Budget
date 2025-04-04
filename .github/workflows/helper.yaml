@@ -21,6 +21,7 @@ jobs:
           name: ${{ inputs.artifactory-name }}
           path: ./downloads  # Descarga el archivo en la carpeta local `downloads`
   check-file:
+    needs: download-file
     runs-on: ubuntu-latest
     steps:
       - name: Check files
