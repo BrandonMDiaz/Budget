@@ -2,7 +2,7 @@ name: deploy
 
 on:
   workflow_dispatch:
-
+  
 run-name: Upload and trasnform test
 
 jobs:
@@ -30,16 +30,8 @@ jobs:
           path: scripts/extractedData.json 
 
   store-on-s3:
-    runs-on: ubuntu-latest
-    needs: html-to-json  # Ensures it runs after `html-to-json`
-    steps:
-      - name: Download generated file
-        uses: actions/download-artifact@v4
-        with:
-          name: extracted-data
+    needs: html-to-json
+    uses: brandonmdiaz/Budget/.github/workflows/helper.yml@main
+    with:
+      file_path: ${{steps.html-to-json.outputs.artifact-path}}
 
-      - name: Print JSON contents
-        shell: bash
-        run: |
-          value=`cat extractedData.json`
-          echo The result is $value

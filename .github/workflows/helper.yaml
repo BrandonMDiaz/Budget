@@ -1,0 +1,17 @@
+name: helper
+
+on:
+  workflow_call:
+    inputs:
+      file_path:
+        description: test
+        type: string
+jobs:
+  find-file-please:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Uses file
+        shell: bash
+        run: |
+          value=`cat ${{inputs.file_path}}extractedData.json`
+          echo The result is $value
