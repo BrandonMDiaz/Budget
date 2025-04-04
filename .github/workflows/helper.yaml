@@ -20,6 +20,18 @@ jobs:
         with:
           name: ${{ inputs.artifactory-name }}
           path: ./downloads  # Descarga el archivo en la carpeta local `downloads`
+  check-file:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check files
+        shell: bash
+        run: |
+          ls -al ./ 
+      - name: Check files
+        shell: bash
+        run: |
+          value=`cat ./downloads/extractedData.json`
+          echo The result is $value
   find-file-please:
     needs: download-file
     runs-on: ubuntu-latest
