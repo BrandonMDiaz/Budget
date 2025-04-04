@@ -1,12 +1,14 @@
-const fs = require("fs");
-const cheerio = require("cheerio");
+import fs from 'fs';
+import * as cheerio from 'cheerio';
+import { dirname, resolve } from 'path'
 
 const outputFile = "./extractedData.json";
-const inputFile = "../documents/test.html";
+const pathToFile = "/documents/test.html";
+console.log(dirname)
+const test = fs.readFileSync(resolve(__dirname, pathToFile), 'utf-8');
+console.log(test);
 
 const json = { "hello": "world" }
-const test = fs.readFileSync(inputFile, 'utf-8');
-console.log(test);
 
 fs.writeFileSync(outputFile, JSON.stringify({ json }, null, 2));
 
