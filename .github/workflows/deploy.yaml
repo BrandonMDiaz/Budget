@@ -9,7 +9,7 @@ jobs:
   html-to-json:
     runs-on: ubuntu-latest
     outputs:
-      file-path: scripts/extractedData.json  # Define la ruta completa de salida
+      file-path: $GITHUB_WORKSPACE/scripts/extractedData.json  # Define la ruta completa de salida
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -40,7 +40,11 @@ jobs:
         with:
           name: extracted-data
           path: ./downloads  # Descarga el archivo en la carpeta local `downloads`
-
+      - name: Check files
+        shell: bash
+        run: |
+          value=`cat ./downloads/extractedData.json`
+          echo The result is $value
   call-helper-workflow:
     needs: download-file
     uses: BrandonMDiaz/Budget/.github/workflows/helper.yaml@master  # Llama al workflow externo
