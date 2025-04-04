@@ -3,7 +3,7 @@ import * as cheerio from 'cheerio';
 import { dirname, resolve } from 'path'
 
 const outputFile = "./extractedData.json";
-const pathToFile = "/documents/test.html";
+const pathToFile = "../documents/test.html";
 console.log(dirname)
 const test = fs.readFileSync(resolve(__dirname, pathToFile), 'utf-8');
 console.log(test);
