@@ -35,7 +35,7 @@ jobs:
       - name: Download generated file
         uses: actions/download-artifact@v4
         with:
-          name: extracted-data# Name used in the upload step  
+          name: extracted-data  
   store-on-s3:
     needs: download-file
     uses: BrandonMDiaz/Budget/.github/workflows/helper.yaml@master
