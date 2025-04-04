@@ -29,14 +29,15 @@ jobs:
           name: extracted-data
           path: scripts/extractedData.json 
   download-file:
-        runs-on: ubuntu-latest
-        steps: 
-          - name: download find
-            uses: actions/download-artifact@v3  
-            with:  
-              name: extracted-data  # Name used in the upload step  
+    runs-on: ubuntu-latest
+    needs: html-to-json  # Ensures it runs after `html-to-json`
+    steps:
+      - name: Download generated file
+        uses: actions/download-artifact@v4
+        with:
+          name: extracted-data# Name used in the upload step  
   store-on-s3:
-    needs: html-to-json
+    needs: download-file
     uses: BrandonMDiaz/Budget/.github/workflows/helper.yaml@master
     with:
       file_path: ""
