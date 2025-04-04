@@ -12,7 +12,6 @@ on:
         type: string
 jobs:
   find-file-please:
-    needs: download-file
     runs-on: ubuntu-latest
     steps:
       - name: Download generated file
