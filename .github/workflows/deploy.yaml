@@ -32,5 +32,5 @@ jobs:
     needs: html-to-json
     uses: BrandonMDiaz/Budget/.github/workflows/helper.yaml@master  # Llama al workflow externo
     with:
-      file_path: /downloads/extractedData.json  # Ruta donde se descargó el archivo
+      file_path: ./downloads/extractedData.json  # Ruta donde se descargó el archivo
       artifactory-name: extracted-data
