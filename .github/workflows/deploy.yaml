@@ -29,7 +29,6 @@ jobs:
           name: extracted-data
           path: scripts/extractedData.json 
   call-helper-workflow:
-    needs: download-file
     uses: BrandonMDiaz/Budget/.github/workflows/helper.yaml@master  # Llama al workflow externo
     with:
       file_path: /downloads/extractedData.json  # Ruta donde se descargó el archivo
