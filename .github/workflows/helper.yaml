@@ -9,7 +9,6 @@ on:
 jobs:
   download-file:
     runs-on: ubuntu-latest
-    needs: html-to-json  # Asegura que se ejecute después de `html-to-json`
     steps:
       - name: Download generated file
         uses: actions/download-artifact@v4
