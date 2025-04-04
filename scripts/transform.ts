@@ -2,7 +2,7 @@ const fs = require("fs");
 const cheerio = require("cheerio");
 
 const outputFile = "./extractedData.json";
-const inputFile = "documents/test.html";
+const inputFile = "../documents/test.html";
 
 const json = { "hello": "world" }
 const test = fs.readFileSync(inputFile, 'utf-8');
