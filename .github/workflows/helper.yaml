@@ -18,9 +18,10 @@ jobs:
         uses: actions/download-artifact@v4
         if:  ${{ inputs.artifactory-name != '' }}
         with:
-          name: extracted-data
+          name: ${{ inputs.artifactory-name }}
           path: ./downloads  # Descarga el archivo en la carpeta local `downloads`
   find-file-please:
+    needs: download-file
     runs-on: ubuntu-latest
     steps:
       - name: Uses file
