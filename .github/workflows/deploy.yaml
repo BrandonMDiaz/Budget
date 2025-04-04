@@ -28,27 +28,6 @@ jobs:
         with:
           name: extracted-data
           path: scripts/extractedData.json 
-
-  download-file:
-    runs-on: ubuntu-latest
-    needs: html-to-json  # Asegura que se ejecute después de `html-to-json`
-    steps:
-      - name: Download generated file
-        uses: actions/download-artifact@v4
-        with:
-          name: extracted-data
-          path: ./downloads  # Descarga el archivo en la carpeta local `downloads`
-      - name: Check files
-        shell: bash
-        run: |
-          value=`cat ./downloads/extractedData.json`
-          echo The result is $value
-      - name: List downloaded files
-        shell: bash
-        run: ls -al ../
-      - name: List downloaded files 2
-        shell: bash
-        run: ls -al ../../
   call-helper-workflow:
     needs: download-file
     uses: BrandonMDiaz/Budget/.github/workflows/helper.yaml@master  # Llama al workflow externo

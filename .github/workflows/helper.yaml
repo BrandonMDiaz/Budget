@@ -3,6 +3,10 @@ name: helper
 on:
   workflow_call:
     inputs:
+      artifactory-name:
+        description: name of artifactory where file is stored
+        type: string
+        required: false
       file_path:
         description: test
         type: string
@@ -12,30 +16,13 @@ jobs:
     steps:
       - name: Download generated file
         uses: actions/download-artifact@v4
+        if:  ${{ inputs.artifactory-name != '' }}
         with:
           name: extracted-data
           path: ./downloads  # Descarga el archivo en la carpeta local `downloads`
-      - name: Check files
-        shell: bash
-        run: |
-          value=`cat ./downloads/extractedData.json`
-          echo The result is $value
-      - name: List downloaded files
-        shell: bash
-        run: ls -al ../
-      - name: List downloaded files 2
-        shell: bash
-        run: ls -al ../../
   find-file-please:
     runs-on: ubuntu-latest
     steps:
-      - name: List current path
-        shell: bash
-        run: ls -al ../
-      
-      - name: List current path
-        shell: bash
-        run: ls -al ../../
       - name: Uses file
         shell: bash
         run: |
