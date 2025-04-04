@@ -31,7 +31,7 @@ jobs:
 
   store-on-s3:
     needs: html-to-json
-    uses: brandonmdiaz/Budget/.github/workflows/helper.yml@main
+    uses: BrandonMDiaz/Budget/.github/workflows/helper.yaml@main
     with:
       file_path: ${{steps.html-to-json.outputs.artifact-path}}
 
