@@ -8,8 +8,6 @@ run-name: Upload and transform test
 jobs:
   html-to-json:
     runs-on: ubuntu-latest
-    outputs:
-      file-path: $GITHUB_WORKSPACE/scripts/extractedData.json  # Define la ruta completa de salida
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -47,7 +45,10 @@ jobs:
           echo The result is $value
       - name: List downloaded files
         shell: bash
-        run: ls -al ./downloads
+        run: ls -al ../
+      - name: List downloaded files 2
+        shell: bash
+        run: ls -al ../../
   call-helper-workflow:
     needs: download-file
     uses: BrandonMDiaz/Budget/.github/workflows/helper.yaml@master  # Llama al workflow externo
